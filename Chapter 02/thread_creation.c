@@ -23,12 +23,13 @@ int main(){
         status = 1 ==> If thread is unable to create.   */
 
     if(!status){
-        printf("Custom Created Sucessfuly.\n");
+        printf("Custom Created Successfully.\n");
     }else{
         printf("Unable to create the Custom Thread.\n");
         return 0;
     }
 
+    // Main Function For loop
     for(int i = 0; i < 15; i++){
         printf("I am the process thread created by compiler By default.\n");
         sleep(1);
