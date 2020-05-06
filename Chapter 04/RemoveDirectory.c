@@ -7,7 +7,10 @@ int rmdir(char *dirname);
 int main(){
 
     int isRemoved;
-    isRemoved = rmdir("Linux");
+    char *DIR_NAME;
+    printf("Enter the Directory name you want to create: ");
+    scanf("%[^\n]%*c", DIR_NAME);
+    isRemoved = rmdir(DIR_NAME);
 
     if(isRemoved == 0){ // The value is 0 for Successful 
         printf("Directory is Deleted Succesfully\n");
