@@ -17,3 +17,6 @@ int main(){
         printf("File Doesn't Exists\n");
     }
 }
+
+int access(const char *path, int amode);
+
