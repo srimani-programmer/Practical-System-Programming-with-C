@@ -6,7 +6,7 @@
 int main() { 
   
   int file_descriptor, size;
-  char *filename;
+  char filename[255];
   char *content = (char *) calloc(100, sizeof(char)); 
 
   printf("Enter the filename to read:");

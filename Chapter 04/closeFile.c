@@ -6,7 +6,7 @@ int close(int file_descriptor);
 int main(){
 
     int file_descriptor;
-    char *filename;
+    char filename[50];
 
     printf("Enter the filename: ");
     scanf("%s", filename);

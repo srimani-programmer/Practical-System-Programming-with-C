@@ -21,9 +21,9 @@ int main(){
     permission_status = chmod(filepath, new_permission_value);
     // 0 ---> On Success || -1 ---> On Failure.
     if (permission_status == 0){
-         printf("New permissions are Setted Successfully.!");
+         printf("New permissions are Setted Successfully.!\n");
     }else{
-        printf("Permissions Changed Sucessfully");
+        printf("Permissions Changed Sucessfully\n");
     }
 
     return 0;
