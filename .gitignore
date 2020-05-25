@@ -1,2 +1,8 @@
 .DS_Store
 *.out
+execl
+execle
+execlp
+execv
+execve
+execvp
