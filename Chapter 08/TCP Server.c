@@ -27,14 +27,14 @@ void communicate(int sockfd) {
 
          if (strncmp("exit", buff, 4) == 0) { 
             printf("Client Exited.\n"); 
-            printf("Server is listenning for new connection...\n");
-            continue;
+            printf("Server is Exiting..!\n");
+            break;
         }
 
          if (strncmp("quit", buff, 4) == 0) { 
             printf("Client Exited.\n"); 
-            printf("Server is listenning for new connection...\n");
-            continue;
+            printf("Server is Exiting..!\n");
+            break;
         }
         // print buffer which contains the client contents 
         printf("From client: %s\t To client : ", buff); 
