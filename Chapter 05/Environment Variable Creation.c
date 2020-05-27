@@ -14,6 +14,7 @@ int main(){
         printf("Unable to create a Environment variable.\n");
     }
 
+    printf("%s\n", getenv(variable_name));
     return 0;
 }
 
