@@ -12,7 +12,7 @@
 
 struct messageBuffer {
    long messageType;
-   char data[200];
+   char data[1024];
 };
 
 int main() {
