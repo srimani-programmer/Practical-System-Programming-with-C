@@ -4,8 +4,15 @@
 
 int main(){
 
-    printf("My PID: %d\n",getpid());
-    sleep(2);
-    kill(getpid(), SIGQUIT);
+    int pid = fork();
+
+    if(pid == 0){
+        printf("Child PID: %d\n",getpid());
+    }else{
+        printf("Parent PID: %d\n", getppid());
+    }
+    sleep(3);
+    kill(getppid(), SIGQUIT);
+    
     return 0;
 }
