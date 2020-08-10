@@ -12,7 +12,7 @@ int main(){
         printf("Parent PID: %d\n", getppid());
     }
     sleep(3);
-    kill(getppid(), SIGQUIT);
+    kill(getpid(), SIGQUIT);
     
     return 0;
 }
