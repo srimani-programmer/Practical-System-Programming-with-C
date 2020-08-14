@@ -6,45 +6,59 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 
-#define PERMISSIONS 0644
+#define PERMISSIONS 0777
 
+// Definition of Message Buffer
 struct messageBuffer {
    long mtype;
    char data[1024];
 };
 
+// Global Declaration of Message Buffer Object
+struct messageBuffer object;
+
+// Global Data for Variables
+int msqid;
+int string_status;
+key_t key;
+
+// Function to receive the data from message queue.
+void receiveMessages(){
+
+   while(1) {
+      // Trying to retrieve the data from message queue by checking the condition.
+      // If there is any error, while retrieving the data then 
+      // condition will throw an error and exits the function.
+      if (msgrcv(msqid, &object, sizeof(object.data), 0, 0) == -1) {
+         perror("msgrcv");
+         exit(1);
+      }
+
+      printf("received: \"%s\"\n", object.data);
+      string_status = strcmp(object.data,"end");
+      if (string_status == 0)
+         break;
+   }
+}
 int main() {
-   struct messageBuffer buf;
-   int msqid;
-   int toend;
-   key_t key;
-   
+
+   // Creating the unique Identifier for the message queue.
    if ((key = ftok("messagequeue.txt", 'B')) == -1) {
-      
       perror("ftok");
       exit(1);
    }
-   
-   if ((msqid = msgget(key, PERMISSIONS)) == -1) { 
-    
+   // Connecting the Message Queue.
+   if ((msqid = msgget(key, PERMISSIONS)) == -1) {  
       // connect to the queue
       printf("Unable to Create the Message Queue.\n");
       perror("msgget");
       exit(1);
    }
-   printf("Message Queue: ready to receive messages.\n");
-   
-   for(;;) { /* normally receiving never ends but just to make conclusion this program ends wuth string of end */
-      if (msgrcv(msqid, &buf, sizeof(buf.data), 0, 0) == -1) {
-         perror("msgrcv");
-         exit(1);
-      }
-      printf("received: \"%s\"\n", buf.data);
-      toend = strcmp(buf.data,"end");
-      if (toend == 0)
-      break;
-   }
-   printf("message queue: done receiving messages.\n");
-   system("rm messagequeue.txt");
+
+   printf("Message Queue is ready to receive messages.\n");
+   // Calling the receive message function to reterive the data from message queue.
+   receiveMessages();
+
+   printf("Message Queue is done with receiving messages.\n");
    return 0;
 }
