@@ -1,113 +1,98 @@
-// Client-Server Appication Server Code.
-#include <stdio.h> 
-#include <stdlib.h> 
+#include<stdio.h> 
+#include<stdlib.h> 
 #include<unistd.h>
-#include <string.h> 
-#include <sys/socket.h> 
-#include <sys/types.h> 
-#include <netdb.h> 
-#include <netinet/in.h> 
+#include<string.h> 
+#include<sys/socket.h> 
+#include<sys/types.h> 
+#include<netdb.h> 
+#include<netinet/in.h> 
 
-#define MAX 1024 // Maximum number of data that can transfer
-#define PORT 8080 // port number to connect
+#define MESSAGE_LENGTH 1024 // Maximum number of data that can transfer
+#define PORT 8888 // port number to connect
 #define SA struct sockaddr // Creating Macro for the socketaddr as SA
-  
-// Function designed for chat between client and server. 
-void communicate(int sockfd) { 
 
-    char buff[MAX]; 
-    int n; 
-    // infinite loop for chat 
-    while(1) { 
+struct sockaddr_in serveraddress, client;
+socklen_t length;
+int sockert_file_descriptor, connection, bind_status, connection_status;
+char message[MESSAGE_LENGTH];
 
-        bzero(buff, MAX); 
-  
-        // read the message from client and copy it in buffer 
-        read(sockfd, buff, sizeof(buff));
+int main(){
+    
+    // Creating the Socket
+    sockert_file_descriptor = socket(AF_INET, SOCK_STREAM, 0);
 
-         if (strncmp("exit", buff, 4) == 0) { 
+    if(sockert_file_descriptor == -1){
+        printf("Scoket creation failed.!\n");
+        exit(1);
+    }
+
+    // Erases the memory
+    bzero(&serveraddress, sizeof(serveraddress));
+
+    // Server Properties
+    serveraddress.sin_addr.s_addr = htonl(INADDR_ANY);
+    // Setting the port number
+    serveraddress.sin_port = htons(PORT);
+    // Protocol family
+    serveraddress.sin_family = AF_INET;
+
+    // Binding the newly created socket with the given Ip Address
+    bind_status = bind(sockert_file_descriptor, (SA*)&serveraddress, sizeof(serveraddress));
+
+    if(bind_status == -1){
+        printf("Socket binding failed.!\n");
+        exit(1);
+    }
+
+    // Server is listening for new creation
+    connection_status = listen(sockert_file_descriptor, 5);
+
+    if(connection_status == -1){
+        printf("Socket is unable to listen for new connections.!\n");
+        exit(1);
+    }else{
+        printf("Server is listening for new connection: \n");
+    }
+
+    length =  sizeof(client);
+
+    connection = accept(sockert_file_descriptor, (SA*)&client, &length);
+
+    if(connection == -1){
+        printf("Server is unable to accept the data from client.!\n");
+        exit(1);
+    }
+
+    // Communication Establishment
+    while(1){
+        
+        bzero(message, MESSAGE_LENGTH);
+
+        read(connection, message, sizeof(message));
+
+        if (strncmp("end", message, 3) == 0) { 
             printf("Client Exited.\n"); 
             printf("Server is Exiting..!\n");
             break;
         }
 
-         if (strncmp("quit", buff, 4) == 0) { 
-            printf("Client Exited.\n"); 
-            printf("Server is Exiting..!\n");
-            break;
+        printf("Data received from client: %s\n", message);
+        bzero(message, MESSAGE_LENGTH);
+
+        printf("Enter the message you want to send to the client: ");
+        scanf("%[^\n]%*c", message);
+
+         // Sending the data to the server by storing the number of bytes transferred in bytes variable 
+        ssize_t bytes = write(connection, message, sizeof(message));
+        
+        // If the number of bytes is >= 0 then the data is sent successfully
+        if(bytes >= 0){
+            printf("Data successfully sent to the client.!\n");
         }
-        // print buffer which contains the client contents 
-        printf("From client: %s\t To client : ", buff); 
-        bzero(buff, MAX); 
-        n = 0; 
-        // copy server message in the buffer 
-        while ((buff[n++] = getchar()) != '\n') 
-            ; 
-  
-        // and send that buffer to client 
-        write(sockfd, buff, sizeof(buff)); 
-  
-        // Existing the Server Connection 
-        if (strncmp("exit", buff, 4) == 0) { 
-            printf("Server Exit.\n"); 
-            break; 
-        } 
+        
+    }
+    // Closing the Socket Connection
+    close(sockert_file_descriptor);
 
-        if (strncmp("quit", buff, 4) == 0) { 
-            printf("Server Exit.\n"); 
-            break; 
-        } 
-    } 
-} 
-  
-// Driver function 
-int main() 
-{ 
-    int sockfd, connfd;
-    struct sockaddr_in servaddr, cli; 
-    socklen_t len; 
-
-    // socket creation and verification 
-    sockfd = socket(AF_INET, SOCK_STREAM, 0); 
-    if (sockfd == -1) { 
-        printf("socket creation failed...\n"); 
-        exit(0); 
-    } 
-
-    bzero(&servaddr, sizeof(servaddr)); 
-  
-    // Assigning IPaddress, PORT 
-    servaddr.sin_family = AF_INET; 
-    servaddr.sin_addr.s_addr = htonl(INADDR_ANY); 
-    servaddr.sin_port = htons(PORT); 
-  
-    // Binding newly created socket to given IP and verification 
-    if ((bind(sockfd, (SA*)&servaddr, sizeof(servaddr))) != 0) { 
-        printf("socket bind failed...\n"); 
-        exit(0); 
-    } 
-  
-    // Now server is ready to listen and verification 
-    if ((listen(sockfd, 5)) != 0) { 
-        printf("Listen failed...\n"); 
-        exit(0); 
-    } 
-    else
-        printf("Server listening..\n"); 
-    len = sizeof(cli); 
-  
-    // Accept the data packet from client and verification 
-    connfd =  accept(sockfd, (SA*)&cli, &len); 
-    if (connfd < 0) { 
-        printf("server acccept failed...\n"); 
-        exit(0); 
-    } 
-    else
-        printf("server acccept the client...\n"); 
-  
-    // Function for chatting between client and server 
-    communicate(connfd); 
-  
-    // After chatting close the socket 
-    close(sockfd); 
-} 
+    return 0;
+}
